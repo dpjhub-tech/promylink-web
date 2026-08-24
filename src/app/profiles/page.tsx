@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
@@ -20,7 +20,19 @@ import { Search, Star, SlidersHorizontal, CheckCircle2, X, Users } from "lucide-
 // query — search now runs against local Postgres.
 const designationGroups = Array.from(new Set(DESIGNATIONS.map((d) => d.group)));
 
+// useSearchParams() requires a Suspense boundary above it for Next.js to
+// prerender this page (https://nextjs.org/docs/messages/missing-suspense-with-csr-bailout) —
+// the actual page logic lives in ProfilesPageContent below, so the default
+// export can wrap it without duplicating anything.
 export default function ProfilesPage() {
+  return (
+    <Suspense fallback={null}>
+      <ProfilesPageContent />
+    </Suspense>
+  );
+}
+
+function ProfilesPageContent() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
