@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { z } from "zod";
-import { Mail, ShieldCheck, ArrowRight } from "lucide-react";
+import { User, Briefcase, Mail, ShieldCheck, ArrowRight } from "lucide-react";
 import { useAuth } from "@/contexts/auth-context";
 import { AuthPageShell } from "@/components/auth/auth-page-shell";
 import { AuthTopNav } from "@/components/auth/auth-top-nav";
@@ -16,34 +16,34 @@ import { GoogleButton } from "@/components/auth/google-button";
 import { AuthMessage } from "@/components/auth/auth-message";
 import { PrivacyNote } from "@/components/auth/privacy-note";
 import { AuthFooter } from "@/components/auth/auth-footer";
-import { TrustBadgesList } from "@/components/auth/trust-badges";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { TrustBadgesGrid } from "@/components/auth/trust-badges";
+import { RoleCard } from "@/components/auth/role-card";
 
 const emailSchema = z.string().trim().email("Invalid email address").max(255);
 const passwordSchema = z.string().min(6, "Password must be at least 6 characters").max(128);
+const nameSchema = z.string().trim().min(1, "Name is required").max(100);
 
-// Header, the main two-column grid, and the footer are three fully
-// independent sections — each has its own container width constant, so
-// adjusting one never affects the others. All differ from /signup's (still
-// the site-wide 1440px .container).
+const ROLE_COPY = {
+  creator: { heading: "Creator", subtitle: "Start your journey as a creator on PromyLink." },
+  business: { heading: "Business", subtitle: "Start growing your business on PromyLink." },
+} as const;
+
+// Mirrors /login's section widths/grid for visual consistency between the
+// two auth pages. Unlike /login, the left column here is NOT hidden below
+// xl — it holds the Creator/Business role picker, which is functionally
+// required before submitting, not just marketing copy.
 const HEADER_CONTAINER = "mx-auto w-[85%]";
 const MAIN_CONTAINER = "mx-auto w-[65%]";
 const FOOTER_CONTAINER = "mx-auto w-[92%]";
-// 1fr:1fr = 50%:50% split of the row (after the gap is subtracted).
 const GRID = "grid gap-8 xl:grid-cols-[1fr_1fr] xl:gap-6 items-center";
 
-// Simplified from Promylink/src/pages/Login.tsx for this pass:
-// business-referral-code handling is dropped, and toasts are replaced with
-// inline messages. Google sign-in uses Supabase's native OAuth flow (see
-// auth-context.tsx) instead of the original's Lovable-specific
-// `lovable.auth.signInWithOAuth`, which only works inside the Lovable
-// platform.
-export default function LoginPage() {
+export default function SignupPage() {
   const router = useRouter();
-  const { user, signIn, signInWithGoogle } = useAuth();
+  const { user, signUp, signInWithGoogle } = useAuth();
 
+  const [role, setRole] = useState<"creator" | "business">("creator");
   const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({ email: "", password: "" });
+  const [formData, setFormData] = useState({ name: "", email: "", password: "" });
   const [message, setMessage] = useState<{ type: "error" | "success"; text: string } | null>(null);
 
   useEffect(() => {
@@ -56,20 +56,24 @@ export default function LoginPage() {
     setMessage(null);
 
     try {
+      const name = nameSchema.parse(formData.name);
       const email = emailSchema.parse(formData.email);
       const password = passwordSchema.parse(formData.password);
 
-      const { error } = await signIn(email, password);
+      const { error } = await signUp(email, password, name, role);
       if (error) {
-        setMessage({ type: "error", text: error.message });
-        setLoading(false);
+        const msg = error.message?.includes("already registered")
+          ? "This email is already registered. Please sign in instead."
+          : error.message;
+        setMessage({ type: "error", text: msg });
       } else {
-        router.push("/");
+        setMessage({ type: "success", text: "Check your email — we sent you a confirmation link." });
       }
     } catch (err) {
       if (err instanceof z.ZodError) {
         setMessage({ type: "error", text: err.issues[0]?.message ?? "Validation error" });
       }
+    } finally {
       setLoading(false);
     }
   };
@@ -81,55 +85,69 @@ export default function LoginPage() {
       gridClassName={GRID}
       rightWrapperClassName="flex justify-center xl:justify-end"
       topRight={
-        <AuthTopNav question="New to PromyLink?" linkText="Create account" linkHref="/signup" variant="button" />
+        <AuthTopNav question="Already have an account?" linkText="Sign in" linkHref="/login" variant="link" />
       }
       footer={<AuthFooter containerClassName={FOOTER_CONTAINER} />}
       left={
-        // Hidden entirely below xl — on smaller screens, show only the
-        // sign-in form, not the marketing panel stacked above it.
-        // xl:pl-6 nudges it rightward, off the container's left edge, at
-        // desktop width where it's narrower relative to the form column.
-        <div className="hidden xl:block xl:pl-6">
+        <div>
           <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-primary/10 px-2.5 h-6 text-xs font-semibold text-brand-primary mb-5">
             <ShieldCheck className="h-3.5 w-3.5" />
             Verified. Trusted. Trackable.
           </span>
 
           <h1 className="max-w-[500px] text-[40px] font-semibold leading-[1.15] tracking-[-0.5px] text-brand-text-primary mb-4">
-            Welcome back to{" "}
-            <span className="brand-gradient bg-clip-text text-transparent">PromyLink</span>
+            Create your PromyLink account
           </h1>
           <p className="max-w-[500px] text-base leading-[1.5] text-brand-text-secondary mb-8">
-            Sign in to continue discovering verified links, growing your reach and managing your campaigns.
+            Join India&apos;s premium platform for verified links, creators and businesses.
           </p>
 
-          <TrustBadgesList />
+          <p className="text-sm font-semibold text-brand-text-primary mb-3">Choose how you&apos;ll use PromyLink</p>
+          <div className="grid grid-cols-2 gap-3.5 max-w-[420px] mb-8">
+            <RoleCard
+              icon={User}
+              title="Creator"
+              description="Publish, grow and earn."
+              buttonLabel="Continue as Creator"
+              tone="primary"
+              selected={role === "creator"}
+              onSelect={() => setRole("creator")}
+            />
+            <RoleCard
+              icon={Briefcase}
+              title="Business"
+              description="Promote, collaborate and manage campaigns."
+              buttonLabel="Continue as Business"
+              tone="accent"
+              selected={role === "business"}
+              onSelect={() => setRole("business")}
+            />
+          </div>
 
-          <div className="mt-8 pt-6 border-t border-brand-border flex items-center gap-3">
-            <div className="flex -space-x-2">
-              {["A", "B", "C"].map((initial) => (
-                <Avatar key={initial} className="h-8 w-8 ring-2 ring-brand-background">
-                  <AvatarFallback className="bg-brand-primary/10 text-brand-primary text-xs font-semibold">
-                    {initial}
-                  </AvatarFallback>
-                </Avatar>
-              ))}
-            </div>
-            <p className="text-sm text-brand-text-secondary">
-              Trusted by creators and businesses across India. Join thousands of verified users on{" "}
-              <span className="font-semibold text-brand-text-primary">PromyLink</span>.
-            </p>
+          <TrustBadgesGrid />
+
+          <div className="mt-6">
+            <PrivacyNote />
           </div>
         </div>
       }
       right={
         <AuthCard className="w-full max-w-[480px] xl:max-w-none rounded-2xl border border-brand-border shadow-sm p-10">
-          <h2 className="text-2xl font-semibold text-brand-text-primary">Sign in to PromyLink</h2>
-          <p className="text-sm text-brand-text-muted mt-1 mb-6">Enter your details to access your account.</p>
+          <h2 className="text-2xl font-semibold text-brand-text-primary">Create your {ROLE_COPY[role].heading} account</h2>
+          <p className="text-sm text-brand-text-muted mt-1 mb-6">{ROLE_COPY[role].subtitle}</p>
 
           {message && <AuthMessage type={message.type} text={message.text} />}
 
           <form onSubmit={handleSubmit} className="space-y-4">
+            <AuthInput
+              label="Full Name"
+              icon={User}
+              type="text"
+              placeholder="Enter your full name"
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              required
+            />
             <AuthInput
               label="Email Address"
               icon={Mail}
@@ -139,20 +157,14 @@ export default function LoginPage() {
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               required
             />
-            <div>
-              <PasswordInput
-                label="Password"
-                value={formData.password}
-                onChange={(value) => setFormData({ ...formData, password: value })}
-                placeholder="Enter your password"
-                autoComplete="current-password"
-              />
-              <div className="text-right mt-1.5">
-                <Link href="/forgot-password" className="text-sm font-medium text-brand-primary hover:underline">
-                  Forgot password?
-                </Link>
-              </div>
-            </div>
+            <PasswordInput
+              label="Password"
+              value={formData.password}
+              onChange={(value) => setFormData({ ...formData, password: value })}
+              placeholder="Create a strong password"
+              hint="Use at least 6 characters with a mix of letters, numbers & symbols."
+              autoComplete="new-password"
+            />
 
             <button
               type="submit"
@@ -161,7 +173,7 @@ export default function LoginPage() {
             >
               {loading ? "Please wait…" : (
                 <>
-                  Sign in
+                  Create account
                   <ArrowRight className="h-4 w-4" />
                 </>
               )}
@@ -171,7 +183,7 @@ export default function LoginPage() {
           <AuthDivider />
 
           <GoogleButton
-            label="Sign in with Google"
+            label="Sign up with Google"
             disabled={loading}
             onClick={async () => {
               setLoading(true);
@@ -184,9 +196,11 @@ export default function LoginPage() {
             }}
           />
 
-          <div className="mt-5">
-            <PrivacyNote />
-          </div>
+          <p className="mt-5 text-center text-xs text-brand-text-muted">
+            By signing up, you agree to our{" "}
+            <Link href="/terms" className="text-brand-primary hover:underline">Terms of Service</Link> and{" "}
+            <Link href="/privacy" className="text-brand-primary hover:underline">Privacy Policy</Link>.
+          </p>
         </AuthCard>
       }
     />

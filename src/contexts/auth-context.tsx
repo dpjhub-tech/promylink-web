@@ -9,7 +9,12 @@ interface AuthContextType {
   user: User | null;
   session: Session | null;
   loading: boolean;
-  signUp: (email: string, password: string, name: string) => Promise<{ error: Error | null }>;
+  signUp: (
+    email: string,
+    password: string,
+    name: string,
+    role?: "creator" | "business",
+  ) => Promise<{ error: Error | null }>;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
   signInWithGoogle: () => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
@@ -47,14 +52,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => subscription.unsubscribe();
   }, []);
 
-  const signUp = async (email: string, password: string, name: string) => {
+  // `role` is carried as Supabase user_metadata so it survives the signup
+  // redirect/confirmation step. NOTE: the backend's profile-creation path
+  // (UsersService.findOrCreate) doesn't read this yet and always defaults to
+  // the 'user' role — wiring that up is a separate, not-yet-done backend change.
+  const signUp = async (email: string, password: string, name: string, role?: "creator" | "business") => {
     const redirectUrl = `${window.location.origin}/`;
     const { error } = await supabase.auth.signUp({
       email,
       password,
       options: {
         emailRedirectTo: redirectUrl,
-        data: { name },
+        data: { name, ...(role ? { role } : {}) },
       },
     });
     return { error };
