@@ -76,6 +76,39 @@
 
   --shadow-glow: 0 0 40px -10px hsl(200 85% 45% / 0.35);
   --shadow-verified: 0 0 20px -5px hsl(200 85% 45% / 0.4);
+
+  /* ── PromyLink brand tokens ──────────────────────────────────────────────
+     Centralized color foundation (see /COLOR_THEME.md at the workspace root
+     for the full spec/rationale — same source of truth to use for mobile and
+     admin builds later). These are additive: nothing above this block has
+     been changed, so no existing screen changes appearance from this pass.
+     Namespaced "brand-*" (rather than the shadcn-style names above, e.g.
+     --primary/--accent) because Tailwind v4's @theme maps every --color-*
+     entry straight to a utility class — reusing --color-primary here would
+     silently override the primary color already used across every existing
+     page. Prefixing avoids that collision entirely. */
+  --brand-primary: #2563eb;
+  --brand-primary-dark: #1e3a8a;
+  --brand-accent: #c026d3;
+  --brand-gradient: linear-gradient(135deg, #2563eb 0%, #c026d3 100%);
+
+  --brand-background: #f8fafc;
+  --brand-surface: #ffffff;
+  --brand-surface-secondary: #f1f5f9;
+  --brand-text-primary: #0f172a;
+  --brand-text-secondary: #475569;
+  --brand-text-muted: #64748b;
+  --brand-border: #e2e8f0;
+  --brand-border-strong: #cbd5e1;
+
+  --brand-success: #16a34a;
+  --brand-success-bg: #f0fdf4;
+  --brand-warning: #f59e0b;
+  --brand-warning-bg: #fffbeb;
+  --brand-error: #dc2626;
+  --brand-error-bg: #fef2f2;
+  --brand-info: #0284c7;
+  --brand-info-bg: #f0f9ff;
 }
 
 .dark {
@@ -141,6 +174,30 @@
   --color-input: hsl(var(--input));
   --color-ring: hsl(var(--ring));
   --color-boost: hsl(var(--boost));
+
+  /* PromyLink brand tokens — generates bg-brand-*, text-brand-*, and
+     border-brand-* utilities. See the :root block above for raw values. */
+  --color-brand-primary: var(--brand-primary);
+  --color-brand-primary-dark: var(--brand-primary-dark);
+  --color-brand-accent: var(--brand-accent);
+
+  --color-brand-background: var(--brand-background);
+  --color-brand-surface: var(--brand-surface);
+  --color-brand-surface-secondary: var(--brand-surface-secondary);
+  --color-brand-text-primary: var(--brand-text-primary);
+  --color-brand-text-secondary: var(--brand-text-secondary);
+  --color-brand-text-muted: var(--brand-text-muted);
+  --color-brand-border: var(--brand-border);
+  --color-brand-border-strong: var(--brand-border-strong);
+
+  --color-brand-success: var(--brand-success);
+  --color-brand-success-bg: var(--brand-success-bg);
+  --color-brand-warning: var(--brand-warning);
+  --color-brand-warning-bg: var(--brand-warning-bg);
+  --color-brand-error: var(--brand-error);
+  --color-brand-error-bg: var(--brand-error-bg);
+  --color-brand-info: var(--brand-info);
+  --color-brand-info-bg: var(--brand-info-bg);
 
   --radius-lg: var(--radius);
   --radius-md: calc(var(--radius) - 2px);
@@ -210,6 +267,10 @@ body {
   .gradient-accent { background: var(--gradient-accent); }
   .gradient-boost { background: var(--gradient-boost); }
   .gradient-hero { background: var(--gradient-hero); }
+
+  /* Brand accent only — per COLOR_THEME.md, this is for occasional brand
+     moments, not a default treatment for buttons/cards/sections. */
+  .brand-gradient { background: var(--brand-gradient); }
 
   .input-search {
     width: 100%;
