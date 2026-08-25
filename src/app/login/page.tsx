@@ -47,7 +47,7 @@ export default function LoginPage() {
   const [message, setMessage] = useState<{ type: "error" | "success"; text: string } | null>(null);
 
   useEffect(() => {
-    if (user) router.replace("/");
+    if (user) router.replace("/dashboard");
   }, [user, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -64,7 +64,7 @@ export default function LoginPage() {
         setMessage({ type: "error", text: error.message });
         setLoading(false);
       } else {
-        router.push("/");
+        router.push("/dashboard");
       }
     } catch (err) {
       if (err instanceof z.ZodError) {

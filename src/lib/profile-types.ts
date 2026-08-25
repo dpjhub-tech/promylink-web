@@ -11,11 +11,13 @@ export interface Profile {
   ratingCount: number;
   avatarUrl: string | null;
   isVerified: boolean;
-  govIdStatus: string | null;
+  role: "user" | "creator" | "business" | "admin";
+  govIdType: "aadhaar" | "pan" | null;
+  govIdDocUrl: string | null;
+  govIdStatus: string;
   walletCredits: number;
   createdAt: string;
   updatedAt: string;
-  roles: string[];
 }
 
 export interface UpdateProfileInput {

@@ -26,6 +26,7 @@ export interface Post {
   expiresAt: string | null;
   category: { id: string; name: string; slug: string; icon: string } | null;
   subcategory: { id: string; name: string; slug: string } | null;
+  user: { id: string; name: string; username: string | null; avatarUrl: string | null; isVerified: boolean } | null;
 }
 
 // Adds the owner-only fields returned by GET /posts/mine on top of the
