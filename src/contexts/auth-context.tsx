@@ -57,7 +57,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // (UsersService.findOrCreate) doesn't read this yet and always defaults to
   // the 'user' role — wiring that up is a separate, not-yet-done backend change.
   const signUp = async (email: string, password: string, name: string, role?: "creator" | "business") => {
-    const redirectUrl = `${window.location.origin}/`;
+    const redirectUrl = `${window.location.origin}/dashboard`;
     const { error } = await supabase.auth.signUp({
       email,
       password,
@@ -82,7 +82,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signInWithGoogle = async () => {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
-      options: { redirectTo: `${window.location.origin}/` },
+      options: { redirectTo: `${window.location.origin}/dashboard` },
     });
     return { error };
   };

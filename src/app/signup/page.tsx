@@ -47,7 +47,7 @@ export default function SignupPage() {
   const [message, setMessage] = useState<{ type: "error" | "success"; text: string } | null>(null);
 
   useEffect(() => {
-    if (user) router.replace("/");
+    if (user) router.replace("/dashboard");
   }, [user, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
