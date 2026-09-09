@@ -29,7 +29,7 @@ export function CTASection() {
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link href="/signup">
+            <Link href="/organization/signup">
               <Button variant="hero" size="xl" className="gap-2 min-w-[200px] group">
                 <Shield className="h-5 w-5" />
                 Get Started Free
