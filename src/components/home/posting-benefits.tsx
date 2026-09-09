@@ -78,7 +78,7 @@ export function PostingBenefits() {
         </div>
 
         <div className={`text-center mt-12 transition-all duration-700 delay-500 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
-          <Link href="/signup">
+          <Link href="/organization/signup">
             <Button variant="gradient" size="xl" className="gap-2 group">
               Start Posting for Free
               <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />

@@ -1,9 +1,20 @@
-export function GoogleButton({ label, onClick, disabled }: { label: string; onClick: () => void; disabled?: boolean }) {
+export function GoogleButton({
+  label,
+  onClick,
+  disabled,
+  title,
+}: {
+  label: string;
+  onClick: () => void;
+  disabled?: boolean;
+  title?: string;
+}) {
   return (
     <button
       type="button"
       onClick={onClick}
       disabled={disabled}
+      title={title}
       className="w-full h-12 inline-flex items-center justify-center gap-2 rounded-[10px] border border-brand-border bg-brand-surface text-sm font-semibold text-brand-text-primary hover:bg-brand-surface-secondary transition-colors disabled:opacity-50 disabled:pointer-events-none"
     >
       <svg className="h-5 w-5" viewBox="0 0 24 24">

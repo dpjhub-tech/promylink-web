@@ -81,7 +81,7 @@ export default function LoginPage() {
       gridClassName={GRID}
       rightWrapperClassName="flex justify-center xl:justify-end"
       topRight={
-        <AuthTopNav question="New to PromyLink?" linkText="Create account" linkHref="/signup" variant="button" />
+        <AuthTopNav question="New to PromyLink?" linkText="Create account" linkHref="/organization/signup" variant="button" />
       }
       footer={<AuthFooter containerClassName={FOOTER_CONTAINER} />}
       left={
