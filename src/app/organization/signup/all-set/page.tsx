@@ -56,13 +56,18 @@ export default function VerificationUnderReviewPage() {
 
   return (
     <WizardShell
-      currentIndex={2}
-      backHref="/organization/signup/organization-information"
+      currentIndex={4}
+      backHref="/organization/signup/review-submit"
       containerClassName="max-w-3xl"
     >
       {/* Top Graphic & Header */}
       <div className="text-center mb-8">
         <UnderReviewGraphic />
+
+        <div className="flex items-center justify-center gap-2 text-xs font-semibold text-brand-primary bg-brand-primary/5 border border-brand-primary/20 px-3 py-1 rounded-full w-fit mx-auto mb-2.5">
+          <Clock className="h-3.5 w-3.5" />
+          Step 5 of 5: Verification Status &amp; Timeline
+        </div>
 
         <div className="inline-flex items-center gap-1.5 rounded-full border border-amber-300 bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-800 mb-3">
           <Clock className="h-3.5 w-3.5" />

@@ -1,19 +1,34 @@
 // Shared step list for the organization signup wizard.
 export const WIZARD_STEPS = [
   {
-    key: "create-account",
-    label: "Account & Verification",
-    description: "Contact details & Dual OTP verification.",
+    key: "account",
+    label: "Account",
+    description: "Account credentials & OTP verification.",
+    path: "/organization/signup",
   },
   {
-    key: "organization-information",
-    label: "Business Details & Documents",
-    description: "Structure, business details & KYC proofs.",
+    key: "business-details",
+    label: "Business Details",
+    description: "Legal name, industry & business structure.",
+    path: "/organization/signup/business-details",
+  },
+  {
+    key: "verification-documents",
+    label: "Verification & Documents",
+    description: "Registration certificate & KYC proofs.",
+    path: "/organization/signup/verification-documents",
+  },
+  {
+    key: "review-submit",
+    label: "Review & Submit",
+    description: "Application summary & submission.",
+    path: "/organization/signup/review-submit",
   },
   {
     key: "all-set",
-    label: "Verification Timeline",
-    description: "Review submission & timeline tracking.",
+    label: "Verification Status",
+    description: "Review timeline & SLA tracking.",
+    path: "/organization/signup/all-set",
   },
 ] as const;
 

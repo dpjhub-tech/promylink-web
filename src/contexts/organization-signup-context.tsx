@@ -323,15 +323,24 @@ export interface OrganizationSignupState {
   industry: string;
   website: string;
 
-  // 2-Document KYC (1 compulsory primary + 1 selected secondary)
+  // KYC Documents
+  // 1. Compulsory Primary Proof
   keyRegistrationDoc: UploadedDocInfo;
-  secondaryDocType: SecondaryDocKey;
+
+  // 2. Primary Identity / Tax Proof (PAN)
   panNumber: string;
   panDoc: UploadedDocInfo;
+
+  // 3. Optional Supporting Documents
+  hasGst: boolean;
   gstin: string;
   gstDoc: UploadedDocInfo;
+
+  hasUdyam: boolean;
   udyamNumber: string;
   udyamDoc: UploadedDocInfo;
+
+  secondaryDocType: SecondaryDocKey;
   shopEstablishmentNumber: string;
   shopEstablishmentDoc: UploadedDocInfo;
   firmRegistrationNumber: string;
@@ -343,7 +352,7 @@ export interface OrganizationSignupState {
   bankName: string;
   bankDoc: UploadedDocInfo;
 
-  // Step 3: Application Submission Status
+  // Step 4 / Submission Status
   applicationId: string;
   submittedAt: string;
   status: "draft" | "under_review" | "approved";
@@ -367,8 +376,10 @@ const initialState: OrganizationSignupState = {
   secondaryDocType: "pan",
   panNumber: "",
   panDoc: {},
+  hasGst: false,
   gstin: "",
   gstDoc: {},
+  hasUdyam: false,
   udyamNumber: "",
   udyamDoc: {},
   shopEstablishmentNumber: "",

@@ -140,7 +140,7 @@ export default function BusinessSignupPage() {
 
     // If both are already verified (e.g. returning to step), navigate immediately
     if (state.isEmailVerified && state.isPhoneVerified) {
-      router.push("/organization/signup/organization-information");
+      router.push("/organization/signup/business-details");
       return;
     }
 
@@ -150,7 +150,7 @@ export default function BusinessSignupPage() {
 
   const handleAllVerified = () => {
     setIsOtpModalOpen(false);
-    router.push("/organization/signup/organization-information");
+    router.push("/organization/signup/business-details");
   };
 
   return (
@@ -173,7 +173,7 @@ export default function BusinessSignupPage() {
           <div className="pl-24 xl:pl-28 pt-16">
             <div className="inline-flex items-center gap-2 rounded-full border border-brand-primary/20 bg-brand-primary/5 px-3.5 py-1 text-xs font-semibold text-brand-primary mb-4">
               <KeyRound className="h-3.5 w-3.5" />
-              Step 1 of 3: Account &amp; Verification
+              Step 1 of 5: Account &amp; Verification
             </div>
 
             <h1 className="text-3xl xl:text-[36px] font-bold text-brand-text-primary tracking-tight leading-[1.18] mb-3">
