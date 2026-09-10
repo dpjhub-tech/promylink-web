@@ -491,3 +491,35 @@ body {
   0%, 100% { transform: translateY(0px); }
   50% { transform: translateY(-15px); }
 }
+
+@keyframes brandTextFlow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.brand-text-animated {
+  background: linear-gradient(
+    120deg,
+    #1e40af 0%,
+    #2563eb 20%,
+    #06b6d4 40%,
+    #00d2b4 55%,
+    #3b82f6 70%,
+    #c026d3 85%,
+    #1e40af 100%
+  );
+  background-size: 260% 100%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+  animation: brandTextFlow 6s ease infinite;
+}
+

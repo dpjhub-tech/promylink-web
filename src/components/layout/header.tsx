@@ -9,6 +9,7 @@ import { Menu, X, Plus, LogOut, Settings, Building2, Video, Search } from "lucid
 import { useAuth } from "@/contexts/auth-context";
 import { HeaderCredits } from "@/components/layout/header-credits";
 import { PostTypeChooser } from "@/components/create-post/post-type-chooser";
+import { PromylinkLogoIcon } from "@/components/ui/promylink-logo";
 import { useToast } from "@/hooks/use-toast";
 
 // Faithful structural port of Promylink/src/components/layout/Header.tsx.
@@ -62,9 +63,9 @@ export function Header() {
     <header className="fixed top-0 inset-x-0 z-50 w-full border-b border-border/50 bg-background/80 backdrop-blur-xl">
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <Image src="/logo.png" alt="Promylink" width={36} height={36} className="h-9 w-9 rounded-xl object-contain" />
-            <span className="text-xl font-bold">Promylink</span>
+          <Link href="/" className="flex items-center gap-2.5 group">
+            <PromylinkLogoIcon className="h-9 w-auto object-contain transition-transform group-hover:scale-105" />
+            <span className="text-xl font-bold tracking-tight brand-text-animated">PromyLink</span>
           </Link>
 
           <div className="hidden md:flex items-center gap-2 flex-1 max-w-sm mx-6">

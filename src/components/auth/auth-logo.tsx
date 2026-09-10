@@ -1,11 +1,12 @@
 import Link from "next/link";
-import Image from "next/image";
+import { PromylinkLogoIcon } from "@/components/ui/promylink-logo";
 
-export function AuthLogo() {
+export function AuthLogo({ className = "" }: { className?: string }) {
   return (
-    <Link href="/" className="flex items-center gap-2">
-      <Image src="/logo.png" alt="PromyLink" width={32} height={32} className="h-8 w-8 rounded-lg object-contain" />
-      <span className="text-xl font-bold text-brand-text-primary">PromyLink</span>
+    <Link href="/" className={`inline-flex items-center gap-2.5 group select-none ${className}`}>
+      <PromylinkLogoIcon className="h-9 w-auto object-contain transition-transform duration-200 group-hover:scale-105" />
+      <span className="text-xl font-bold tracking-tight brand-text-animated">PromyLink</span>
     </Link>
   );
 }
+
