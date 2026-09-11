@@ -49,9 +49,7 @@ export const BUSINESS_TYPES: Record<BusinessType, BusinessTypeMeta> = {
       {
         id: "pan",
         label: "Proprietor PAN Card",
-        sublabel: "Personal PAN",
-        fieldLabel: "Proprietor PAN Number",
-        placeholder: "e.g. ABCDE1234F",
+        sublabel: "Personal PAN Document Copy",
       },
       {
         id: "gst",
@@ -63,9 +61,7 @@ export const BUSINESS_TYPES: Record<BusinessType, BusinessTypeMeta> = {
       {
         id: "udyam",
         label: "Udyam Certificate",
-        sublabel: "MSME Registration",
-        fieldLabel: "Udyam Number",
-        placeholder: "e.g. UDYAM-TS-00-0000000",
+        sublabel: "MSME Registration Copy",
       },
       {
         id: "shop_establishment",
@@ -97,9 +93,7 @@ export const BUSINESS_TYPES: Record<BusinessType, BusinessTypeMeta> = {
       {
         id: "pan",
         label: "Firm PAN Card",
-        sublabel: "Firm's Entity PAN",
-        fieldLabel: "Partnership Firm PAN Number",
-        placeholder: "e.g. ABCDE1234F",
+        sublabel: "Firm Entity PAN Copy",
       },
       {
         id: "gst",
@@ -118,9 +112,7 @@ export const BUSINESS_TYPES: Record<BusinessType, BusinessTypeMeta> = {
       {
         id: "udyam",
         label: "Udyam Certificate",
-        sublabel: "MSME Registration",
-        fieldLabel: "Udyam Number",
-        placeholder: "e.g. UDYAM-TS-00-0000000",
+        sublabel: "MSME Registration Copy",
       },
       {
         id: "address",
@@ -145,9 +137,7 @@ export const BUSINESS_TYPES: Record<BusinessType, BusinessTypeMeta> = {
       {
         id: "pan",
         label: "LLP PAN Card",
-        sublabel: "Entity PAN",
-        fieldLabel: "LLP PAN Number",
-        placeholder: "e.g. ABCDE1234F",
+        sublabel: "LLP Entity PAN Copy",
       },
       {
         id: "gst",
@@ -159,9 +149,7 @@ export const BUSINESS_TYPES: Record<BusinessType, BusinessTypeMeta> = {
       {
         id: "udyam",
         label: "Udyam Certificate",
-        sublabel: "MSME Registration",
-        fieldLabel: "Udyam Number",
-        placeholder: "e.g. UDYAM-TS-00-0000000",
+        sublabel: "MSME Registration Copy",
       },
       {
         id: "address",
@@ -186,9 +174,7 @@ export const BUSINESS_TYPES: Record<BusinessType, BusinessTypeMeta> = {
       {
         id: "pan",
         label: "Business PAN Card",
-        sublabel: "Company PAN",
-        fieldLabel: "Company PAN Number",
-        placeholder: "e.g. ABCDE1234F",
+        sublabel: "Company PAN Copy",
       },
       {
         id: "gst",
@@ -200,9 +186,7 @@ export const BUSINESS_TYPES: Record<BusinessType, BusinessTypeMeta> = {
       {
         id: "udyam",
         label: "Udyam Certificate",
-        sublabel: "MSME Registration",
-        fieldLabel: "Udyam Number",
-        placeholder: "e.g. UDYAM-TS-00-0000000",
+        sublabel: "MSME Registration Copy",
       },
       {
         id: "address",
@@ -227,9 +211,7 @@ export const BUSINESS_TYPES: Record<BusinessType, BusinessTypeMeta> = {
       {
         id: "pan",
         label: "Business PAN Card",
-        sublabel: "Company PAN",
-        fieldLabel: "Company PAN Number",
-        placeholder: "e.g. ABCDE1234F",
+        sublabel: "Company PAN Copy",
       },
       {
         id: "gst",
@@ -241,9 +223,7 @@ export const BUSINESS_TYPES: Record<BusinessType, BusinessTypeMeta> = {
       {
         id: "udyam",
         label: "Udyam Certificate",
-        sublabel: "MSME Registration",
-        fieldLabel: "Udyam Number",
-        placeholder: "e.g. UDYAM-TS-00-0000000",
+        sublabel: "MSME Registration Copy",
       },
       {
         id: "address",
@@ -268,9 +248,7 @@ export const BUSINESS_TYPES: Record<BusinessType, BusinessTypeMeta> = {
       {
         id: "pan",
         label: "Business PAN Card",
-        sublabel: "Company PAN",
-        fieldLabel: "Company PAN Number",
-        placeholder: "e.g. ABCDE1234F",
+        sublabel: "Company PAN Copy",
       },
       {
         id: "gst",
@@ -282,9 +260,7 @@ export const BUSINESS_TYPES: Record<BusinessType, BusinessTypeMeta> = {
       {
         id: "udyam",
         label: "Udyam Certificate",
-        sublabel: "MSME Registration",
-        fieldLabel: "Udyam Number",
-        placeholder: "e.g. UDYAM-TS-00-0000000",
+        sublabel: "MSME Registration Copy",
       },
       {
         id: "address",
@@ -327,11 +303,14 @@ export interface OrganizationSignupState {
   // 1. Compulsory Primary Proof
   keyRegistrationDoc: UploadedDocInfo;
 
-  // 2. Primary Identity / Tax Proof (PAN)
+  // 2. Mandatory Identity Proof for Sole Proprietorship & OPC
+  aadharDoc: UploadedDocInfo;
+
+  // 3. Primary Identity / Tax Proof (PAN)
   panNumber: string;
   panDoc: UploadedDocInfo;
 
-  // 3. Optional Supporting Documents
+  // 4. Optional Supporting Documents
   hasGst: boolean;
   gstin: string;
   gstDoc: UploadedDocInfo;
@@ -373,6 +352,7 @@ const initialState: OrganizationSignupState = {
   website: "",
 
   keyRegistrationDoc: {},
+  aadharDoc: {},
   secondaryDocType: "pan",
   panNumber: "",
   panDoc: {},

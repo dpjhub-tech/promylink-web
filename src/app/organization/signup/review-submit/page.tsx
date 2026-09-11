@@ -38,12 +38,15 @@ export default function ReviewSubmitPage() {
     currentStructure.secondaryOptions.find((o) => o.id === selectedSecondary) ||
     currentStructure.secondaryOptions[0];
 
+  const isSolePropOrOpc =
+    state.businessType === "sole_proprietorship" || state.businessType === "opc";
+
   const getSecondaryDocDetails = () => {
     switch (selectedSecondary) {
       case "pan":
         return {
           label: secondaryOptionMeta.label,
-          identifier: state.panNumber ? `PAN: ${state.panNumber}` : "",
+          identifier: "",
           file: state.panDoc,
           icon: CreditCard,
         };
@@ -57,7 +60,7 @@ export default function ReviewSubmitPage() {
       case "udyam":
         return {
           label: "Udyam Certificate",
-          identifier: state.udyamNumber ? `Udyam: ${state.udyamNumber}` : "",
+          identifier: "",
           file: state.udyamDoc,
           icon: FileText,
         };
@@ -281,6 +284,28 @@ export default function ReviewSubmitPage() {
               </span>
             </div>
 
+            {/* Mandatory Aadhaar Card for Sole Prop & OPC */}
+            {isSolePropOrOpc && (
+              <div className="flex items-center justify-between p-3 rounded-xl border border-brand-border/80 bg-brand-surface-secondary/40">
+                <div className="flex items-center gap-3 min-w-0 pr-2">
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-brand-success/15 text-brand-success">
+                    <CreditCard className="h-4 w-4" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-xs font-semibold text-brand-text-primary truncate">
+                      2. {state.businessType === "sole_proprietorship" ? "Proprietor" : "Director"} Aadhaar Card Copy
+                    </p>
+                    <p className="text-[11px] text-brand-text-muted truncate">
+                      {state.aadharDoc?.fileName || "No file uploaded"} {state.aadharDoc?.fileSize ? `(${state.aadharDoc.fileSize})` : ""}
+                    </p>
+                  </div>
+                </div>
+                <span className="text-[11px] font-semibold text-brand-success bg-brand-success/10 px-2 py-0.5 rounded shrink-0">
+                  Uploaded ✓
+                </span>
+              </div>
+            )}
+
             {/* Selected Secondary Document */}
             <div className="flex items-center justify-between p-3 rounded-xl border border-brand-border/80 bg-brand-surface-secondary/40">
               <div className="flex items-center gap-3 min-w-0 pr-2">
@@ -289,7 +314,7 @@ export default function ReviewSubmitPage() {
                 </div>
                 <div className="min-w-0">
                   <p className="text-xs font-semibold text-brand-text-primary truncate">
-                    2. Secondary: {secondaryDetails.label} {secondaryDetails.identifier ? `(${secondaryDetails.identifier})` : ""}
+                    {isSolePropOrOpc ? "3. Secondary: " : "2. Secondary: "}{secondaryDetails.label} {secondaryDetails.identifier ? `(${secondaryDetails.identifier})` : ""}
                   </p>
                   <p className="text-[11px] text-brand-text-muted truncate">
                     {secondaryDetails.file?.fileName || "No file uploaded"} {secondaryDetails.file?.fileSize ? `(${secondaryDetails.file.fileSize})` : ""}

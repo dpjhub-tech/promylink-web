@@ -23,6 +23,8 @@ export default function SubmittedInformationPage() {
   const router = useRouter();
   const { state } = useOrganizationSignup();
   const currentTypeMeta = BUSINESS_TYPES[state.businessType];
+  const isSolePropOrOpc =
+    state.businessType === "sole_proprietorship" || state.businessType === "opc";
 
   return (
     <div className="min-h-screen flex flex-col bg-brand-background -mt-16">
@@ -144,7 +146,7 @@ export default function SubmittedInformationPage() {
                   <FileCheck className="h-4.5 w-4.5" />
                 </div>
                 <h2 className="text-base font-bold text-brand-text-primary">
-                  Submitted KYC Documents (2 Required Documents)
+                  Submitted KYC Documents ({isSolePropOrOpc ? 3 : 2} Required Documents)
                 </h2>
               </div>
               <span className="text-xs text-brand-text-muted">
@@ -177,11 +179,37 @@ export default function SubmittedInformationPage() {
                 </div>
               </div>
 
+              {/* Aadhaar Card for Sole Prop & OPC */}
+              {isSolePropOrOpc && (
+                <div className="p-3.5 rounded-xl border border-brand-border bg-brand-surface-secondary/40">
+                  <div className="flex items-center justify-between mb-1">
+                    <p className="text-xs font-bold text-brand-text-primary">
+                      2. {state.businessType === "sole_proprietorship" ? "Proprietor" : "Director"} Aadhaar Card Copy
+                    </p>
+                    <span className="text-[10px] font-bold text-brand-error bg-brand-error/10 px-2 py-0.5 rounded">
+                      Compulsory
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-brand-text-muted">Aadhaar Card Document Copy (Front &amp; Back)</p>
+                  <div className="flex items-center justify-between mt-2.5 text-xs">
+                    <div className="flex items-center gap-2 text-brand-text-secondary">
+                      <CreditCard className="h-4 w-4 text-brand-primary" />
+                      <span className="truncate max-w-[170px]">
+                        {state.aadharDoc.fileName || "Uploaded Document"}
+                      </span>
+                    </div>
+                    <span className="text-[10px] font-bold text-amber-700 bg-amber-100 px-2 py-0.5 rounded">
+                      In Review
+                    </span>
+                  </div>
+                </div>
+              )}
+
               {/* Selected Secondary Document */}
               <div className="p-3.5 rounded-xl border border-brand-border bg-brand-surface-secondary/40">
                 <div className="flex items-center justify-between mb-1">
                   <p className="text-xs font-bold text-brand-text-primary">
-                    2. Secondary Document (Selected)
+                    {isSolePropOrOpc ? "3. Secondary Document (Selected)" : "2. Secondary Document (Selected)"}
                   </p>
                   <span className="text-[10px] font-bold text-brand-primary bg-brand-primary/10 px-2 py-0.5 rounded">
                     Chosen 1
@@ -190,8 +218,8 @@ export default function SubmittedInformationPage() {
 
                 {state.secondaryDocType === "pan" && (
                   <>
-                    <p className="text-[11px] font-mono text-brand-text-muted">
-                      PAN: {state.panNumber || "—"}
+                    <p className="text-[11px] text-brand-text-muted">
+                      PAN Card Document Copy
                     </p>
                     <div className="flex items-center justify-between mt-2.5 text-xs">
                       <div className="flex items-center gap-2 text-brand-text-secondary">
@@ -228,8 +256,8 @@ export default function SubmittedInformationPage() {
 
                 {state.secondaryDocType === "udyam" && (
                   <>
-                    <p className="text-[11px] font-mono text-brand-text-muted">
-                      Udyam: {state.udyamNumber || "—"}
+                    <p className="text-[11px] text-brand-text-muted">
+                      MSME / Udyam Registration Certificate Copy
                     </p>
                     <div className="flex items-center justify-between mt-2.5 text-xs">
                       <div className="flex items-center gap-2 text-brand-text-secondary">

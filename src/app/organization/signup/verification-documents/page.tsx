@@ -74,6 +74,9 @@ export default function VerificationDocumentsPage() {
     }
   };
 
+  const isSolePropOrOpc =
+    state.businessType === "sole_proprietorship" || state.businessType === "opc";
+
   const validate = () => {
     const errs: Record<string, string> = {};
 
@@ -82,19 +85,18 @@ export default function VerificationDocumentsPage() {
       errs.keyRegistrationDoc = `Please upload your ${currentStructure.keyDocName}`;
     }
 
-    // 2. Selected Secondary Document Validation
+    // 2. Mandatory Aadhaar Card for Sole Proprietorship & OPC
+    if (isSolePropOrOpc && !state.aadharDoc?.fileName) {
+      errs.aadharDoc = `Please upload your ${
+        state.businessType === "sole_proprietorship" ? "Proprietor" : "Director / Shareholder"
+      } Aadhaar Card copy`;
+    }
+
+    // 3. Selected Secondary Document Validation
     switch (selectedSecondary) {
       case "pan": {
-        const panClean = state.panNumber.trim().toUpperCase();
-        if (!panClean) {
-          errs.panNumber = "PAN Number is required";
-        } else if (panClean.length !== 10) {
-          errs.panNumber = "PAN must be exactly 10 characters";
-        } else if (!PAN_REGEX.test(panClean)) {
-          errs.panNumber = "Invalid PAN format (e.g. ABCDE1234F)";
-        }
         if (!state.panDoc?.fileName) {
-          errs.panDoc = `Please upload your ${currentSecondaryMeta.label}`;
+          errs.panDoc = `Please upload your ${currentSecondaryMeta.label} copy`;
         }
         break;
       }
@@ -111,11 +113,8 @@ export default function VerificationDocumentsPage() {
         break;
       }
       case "udyam": {
-        if (!state.udyamNumber.trim()) {
-          errs.udyamNumber = "Udyam Registration Number is required";
-        }
         if (!state.udyamDoc?.fileName) {
-          errs.udyamDoc = "Please upload your Udyam Certificate";
+          errs.udyamDoc = "Please upload your Udyam Certificate copy";
         }
         break;
       }
@@ -188,9 +187,9 @@ export default function VerificationDocumentsPage() {
   };
 
   const hasPrimaryUploaded = Boolean(state.keyRegistrationDoc?.fileName);
+  const hasAadhaarUploaded = Boolean(state.aadharDoc?.fileName);
   const currentSecondaryFile = getSecondaryDocFile(selectedSecondary);
   const hasSecondaryUploaded = Boolean(currentSecondaryFile?.fileName);
-  const requiredCount = (hasPrimaryUploaded ? 1 : 0) + (hasSecondaryUploaded ? 1 : 0);
 
   return (
     <WizardShell
@@ -208,7 +207,9 @@ export default function VerificationDocumentsPage() {
           Verification &amp; Documents
         </h1>
         <p className="text-sm text-brand-text-muted mt-1">
-          Upload 1 primary registration proof and 1 secondary supporting document of your choice.
+          {isSolePropOrOpc
+            ? "Upload 1 primary registration proof, 1 Aadhaar card copy, and 1 secondary supporting document."
+            : "Upload 1 primary registration proof and 1 secondary supporting document of your choice."}
         </p>
       </div>
 
@@ -227,6 +228,9 @@ export default function VerificationDocumentsPage() {
             </div>
             <p className="text-xs text-brand-text-secondary mt-0.5">
               Primary Proof: <span className="font-medium text-brand-text-primary">{currentStructure.keyDocName}</span>
+              {isSolePropOrOpc && (
+                <span className="ml-1.5 text-brand-primary font-medium">+ Aadhaar Card Copy</span>
+              )}
             </p>
           </div>
         </div>
@@ -286,12 +290,56 @@ export default function VerificationDocumentsPage() {
           />
         </div>
 
-        {/* Section 2: Selectable Secondary Document */}
+        {/* Section 2: Mandatory Aadhaar Card (Sole Proprietorship & OPC only) */}
+        {isSolePropOrOpc && (
+          <div className="rounded-2xl border border-brand-border bg-brand-surface p-5 sm:p-6 shadow-2xs space-y-4">
+            <div className="flex items-center justify-between border-b border-brand-border/60 pb-3">
+              <div>
+                <h2 className="text-base font-bold text-brand-text-primary">
+                  2. {state.businessType === "sole_proprietorship" ? "Proprietor" : "Director / Shareholder"} Aadhaar Card <span className="text-brand-error">*</span>
+                </h2>
+                <p className="text-xs text-brand-text-muted mt-0.5">
+                  Mandatory identity verification document copy for {currentStructure.label}.
+                </p>
+              </div>
+              <span
+                className={`text-xs font-semibold px-2.5 py-1 rounded-md ${
+                  hasAadhaarUploaded
+                    ? "bg-brand-success/15 text-brand-success"
+                    : "bg-brand-surface-secondary text-brand-text-muted"
+                }`}
+              >
+                {hasAadhaarUploaded ? "Uploaded ✓" : "Pending"}
+              </span>
+            </div>
+
+            <CompactDocUpload
+              label={
+                state.businessType === "sole_proprietorship"
+                  ? "Proprietor Aadhaar Card Copy"
+                  : "Director / Shareholder Aadhaar Card Copy"
+              }
+              sublabel="Clear photo or PDF copy (front & back) of Aadhaar Card"
+              isMandatory={true}
+              uploadedDoc={state.aadharDoc}
+              onFileSelect={(info) => {
+                setDocFile("aadharDoc", info);
+                if (errors.aadharDoc) {
+                  setErrors((prev) => ({ ...prev, aadharDoc: "" }));
+                }
+              }}
+              onFileRemove={() => removeDocFile("aadharDoc")}
+              error={errors.aadharDoc}
+            />
+          </div>
+        )}
+
+        {/* Section: Selectable Secondary Document */}
         <div className="rounded-2xl border border-brand-border bg-brand-surface p-5 sm:p-6 shadow-2xs space-y-5">
           <div className="flex items-center justify-between border-b border-brand-border/60 pb-3">
             <div>
               <h2 className="text-base font-bold text-brand-text-primary">
-                2. Secondary Supporting Document <span className="text-brand-error">*</span>
+                {isSolePropOrOpc ? "3. Secondary Supporting Document" : "2. Secondary Supporting Document"} <span className="text-brand-error">*</span>
               </h2>
               <p className="text-xs text-brand-text-muted mt-0.5">
                 Choose any 1 document below to verify tax/entity identity.
@@ -361,34 +409,6 @@ export default function VerificationDocumentsPage() {
             {/* If PAN */}
             {selectedSecondary === "pan" && (
               <div className="space-y-3">
-                <div>
-                  <label className="block text-xs font-semibold text-brand-text-primary mb-1.5">
-                    {currentSecondaryMeta.fieldLabel || "PAN Card Number"} (10 Characters) <span className="text-brand-error">*</span>
-                  </label>
-                  <div className="relative">
-                    <CreditCard className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-brand-text-muted pointer-events-none" />
-                    <input
-                      type="text"
-                      maxLength={10}
-                      placeholder={currentSecondaryMeta.placeholder || "e.g. ABCDE1234F"}
-                      value={state.panNumber}
-                      onChange={(e) => {
-                        const cleaned = e.target.value.replace(/[^a-zA-Z0-9]/g, "").slice(0, 10).toUpperCase();
-                        updateState({ panNumber: cleaned });
-                        if (errors.panNumber) setErrors((prev) => ({ ...prev, panNumber: "" }));
-                      }}
-                      className={`w-full h-11 rounded-[10px] border bg-brand-surface pl-10 pr-4 text-sm font-mono tracking-wider uppercase text-brand-text-primary placeholder:font-sans placeholder:normal-case placeholder:tracking-normal placeholder:text-brand-text-muted focus:outline-none focus:ring-2 transition-colors ${
-                        errors.panNumber
-                          ? "border-red-500 focus:ring-red-500/20 focus:border-red-500"
-                          : "border-brand-border focus:ring-brand-primary/30 focus:border-brand-primary"
-                      }`}
-                    />
-                  </div>
-                  {errors.panNumber && (
-                    <p className="mt-1 text-xs text-red-500 font-medium">{errors.panNumber}</p>
-                  )}
-                </div>
-
                 <CompactDocUpload
                   label={`${currentSecondaryMeta.label} Copy`}
                   sublabel="Clear photo or official PDF of PAN Card"
@@ -448,30 +468,9 @@ export default function VerificationDocumentsPage() {
             {/* If Udyam */}
             {selectedSecondary === "udyam" && (
               <div className="space-y-3">
-                <div>
-                  <label className="block text-xs font-semibold text-brand-text-primary mb-1.5">
-                    Udyam Registration Number <span className="text-brand-error">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="e.g. UDYAM-TS-00-0000000"
-                    value={state.udyamNumber}
-                    onChange={(e) => {
-                      updateState({ udyamNumber: e.target.value.toUpperCase() });
-                      if (errors.udyamNumber) setErrors((prev) => ({ ...prev, udyamNumber: "" }));
-                    }}
-                    className={`w-full h-11 rounded-[10px] border bg-brand-surface px-3.5 text-sm font-mono uppercase tracking-wider text-brand-text-primary focus:outline-none focus:ring-2 ${
-                      errors.udyamNumber ? "border-red-500" : "border-brand-border focus:border-brand-primary"
-                    }`}
-                  />
-                  {errors.udyamNumber && (
-                    <p className="mt-1 text-xs text-red-500 font-medium">{errors.udyamNumber}</p>
-                  )}
-                </div>
-
                 <CompactDocUpload
                   label="Udyam Certificate Copy"
-                  sublabel="Official MSME Registration Certificate"
+                  sublabel="Official MSME Registration Certificate PDF or clear photo"
                   isMandatory={true}
                   uploadedDoc={state.udyamDoc}
                   onFileSelect={(info) => {
@@ -678,12 +677,12 @@ export default function VerificationDocumentsPage() {
           </div>
         </div>
 
-        {/* Section 3: Optional Additional Documents (e.g. GST if not selected above) */}
+        {/* Section: Optional Additional Documents (e.g. GST if not selected above) */}
         {selectedSecondary !== "gst" && (
           <div className="rounded-2xl border border-brand-border bg-brand-surface p-5 sm:p-6 shadow-2xs space-y-4">
             <div className="border-b border-brand-border/60 pb-3">
               <h2 className="text-base font-bold text-brand-text-primary">
-                Optional Supporting Documents
+                {isSolePropOrOpc ? "4. Optional Supporting Documents" : "3. Optional Supporting Documents"}
               </h2>
               <p className="text-xs text-brand-text-muted mt-0.5">
                 Speed up verification by adding optional tax or municipal certificates.

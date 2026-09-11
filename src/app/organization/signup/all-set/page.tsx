@@ -50,6 +50,8 @@ export default function VerificationUnderReviewPage() {
   const router = useRouter();
   const { state } = useOrganizationSignup();
   const currentTypeMeta = BUSINESS_TYPES[state.businessType];
+  const isSolePropOrOpc =
+    state.businessType === "sole_proprietorship" || state.businessType === "opc";
 
   const submittedDate = state.submittedAt || "Just now";
   const orgDisplayName = state.organizationName || "Your Organization";
@@ -210,7 +212,7 @@ export default function VerificationUnderReviewPage() {
         {/* Uploaded Documents List */}
         <div className="pt-3 border-t border-brand-border/60">
           <p className="text-xs font-semibold text-brand-text-primary mb-2.5">
-            Uploaded KYC Dossier (2 Required Documents)
+            Uploaded KYC Dossier ({isSolePropOrOpc ? 3 : 2} Required Documents)
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
             {/* Primary Compulsory Doc */}
@@ -231,16 +233,36 @@ export default function VerificationUnderReviewPage() {
               </span>
             </div>
 
+            {/* Aadhaar Card for Sole Prop & OPC */}
+            {isSolePropOrOpc && (
+              <div className="flex items-center justify-between p-3 rounded-xl border border-brand-border bg-brand-surface-secondary/40 text-xs">
+                <div className="min-w-0 pr-2">
+                  <span className="text-[10px] font-bold text-brand-primary uppercase tracking-wider block">
+                    2. Aadhaar Card Copy (Mandatory)
+                  </span>
+                  <span className="font-semibold text-brand-text-primary truncate block mt-0.5">
+                    {state.businessType === "sole_proprietorship" ? "Proprietor" : "Director"} Aadhaar Card
+                  </span>
+                  <span className="text-[11px] text-brand-text-muted truncate block">
+                    {state.aadharDoc.fileName || "Aadhaar_Card_Copy.pdf"}
+                  </span>
+                </div>
+                <span className="text-[10px] font-bold text-amber-700 bg-amber-100 px-2.5 py-1 rounded shrink-0">
+                  In Review
+                </span>
+              </div>
+            )}
+
             {/* Selected Secondary Doc */}
             <div className="flex items-center justify-between p-3 rounded-xl border border-brand-border bg-brand-surface-secondary/40 text-xs">
               <div className="min-w-0 pr-2">
                 <span className="text-[10px] font-bold text-brand-primary uppercase tracking-wider block">
-                  2. Secondary Document (Selected)
+                  {isSolePropOrOpc ? "3. Secondary Document (Selected)" : "2. Secondary Document (Selected)"}
                 </span>
                 {state.secondaryDocType === "pan" && (
                   <>
                     <span className="font-semibold text-brand-text-primary truncate block mt-0.5">
-                      {currentTypeMeta.secondaryOptions.find((o) => o.id === "pan")?.label || "PAN Card"} ({state.panNumber || "PAN"})
+                      {currentTypeMeta.secondaryOptions.find((o) => o.id === "pan")?.label || "PAN Card"} Copy
                     </span>
                     <span className="text-[11px] text-brand-text-muted truncate block">
                       {state.panDoc.fileName || "PAN_Card.pdf"}
@@ -260,7 +282,7 @@ export default function VerificationUnderReviewPage() {
                 {state.secondaryDocType === "udyam" && (
                   <>
                     <span className="font-semibold text-brand-text-primary truncate block mt-0.5">
-                      Udyam Certificate ({state.udyamNumber || "Udyam"})
+                      Udyam Registration Certificate Copy
                     </span>
                     <span className="text-[11px] text-brand-text-muted truncate block">
                       {state.udyamDoc.fileName || "Udyam_Certificate.pdf"}

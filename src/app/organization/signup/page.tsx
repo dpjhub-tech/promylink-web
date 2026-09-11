@@ -20,8 +20,6 @@ import { AuthTopNav } from "@/components/auth/auth-top-nav";
 import { AuthInput } from "@/components/auth/auth-input";
 import { PasswordInput } from "@/components/auth/password-input";
 import { PhoneInput, COUNTRY_CODES } from "@/components/auth/phone-input";
-import { GoogleButton } from "@/components/auth/google-button";
-import { MicrosoftButton } from "@/components/auth/microsoft-button";
 import { CityIllustration } from "@/components/organization-signup/city-illustration";
 import { DualOtpModal } from "@/components/organization-signup/dual-otp-modal";
 import { useOrganizationSignup } from "@/contexts/organization-signup-context";
@@ -50,6 +48,29 @@ const FEATURES = [
 ];
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+const BLOCKED_PERSONAL_EMAIL_DOMAINS = new Set([
+  "gmail.com",
+  "googlemail.com",
+  "yahoo.com",
+  "ymail.com",
+  "rocketmail.com",
+  "outlook.com",
+  "hotmail.com",
+  "live.com",
+  "msn.com",
+  "icloud.com",
+  "me.com",
+  "mac.com",
+  "aol.com",
+  "zoho.com",
+  "protonmail.com",
+  "proton.me",
+  "mail.com",
+  "gmx.com",
+  "yandex.com",
+  "rediffmail.com",
+]);
 
 export default function BusinessSignupPage() {
   const router = useRouter();
@@ -87,7 +108,20 @@ export default function BusinessSignupPage() {
 
   // Validation checks
   const isNameValid = formData.name.trim().length >= 2;
-  const isEmailValid = EMAIL_REGEX.test(formData.email.trim());
+  
+  const getEmailValidationError = (email: string): string | undefined => {
+    const trimmed = email.trim().toLowerCase();
+    if (!trimmed) return "Work email is required";
+    if (!EMAIL_REGEX.test(trimmed)) return "Please enter a valid email address";
+    const domain = trimmed.split("@")[1];
+    if (domain && BLOCKED_PERSONAL_EMAIL_DOMAINS.has(domain)) {
+      return "Please enter your official work email (personal domains like Gmail, Outlook, Yahoo are not allowed)";
+    }
+    return undefined;
+  };
+
+  const emailError = getEmailValidationError(formData.email);
+  const isEmailValid = !emailError;
   const isPhoneValid = formData.phone.length === activeCountry.digits;
 
   // Password strength checks (min 8 chars, letters, numbers, symbols)
@@ -246,20 +280,14 @@ export default function BusinessSignupPage() {
                   label="Work Email *"
                   icon={Mail}
                   type="email"
-                  placeholder="Enter your work email"
+                  placeholder="name@company.com"
                   value={formData.email}
                   onChange={(e) => {
                     const val = e.target.value;
                     setFormData((prev) => ({ ...prev, email: val }));
                   }}
                   onBlur={() => handleBlur("email")}
-                  error={
-                    touched.email && !isEmailValid
-                      ? formData.email.trim().length === 0
-                        ? "Work email is required"
-                        : "Please enter a valid work email address"
-                      : undefined
-                  }
+                  error={touched.email ? emailError : undefined}
                   required
                 />
               </div>
@@ -444,24 +472,7 @@ export default function BusinessSignupPage() {
               </button>
             </form>
 
-            <div className="relative my-4 flex items-center justify-center">
-              <div className="w-full border-t border-brand-border" />
-              <span className="absolute bg-white px-3 text-xs text-brand-text-muted">
-                or continue with
-              </span>
-            </div>
-
-            <div className="grid sm:grid-cols-2 gap-3.5">
-              <GoogleButton
-                label="Continue with Google"
-                onClick={() => {}}
-                disabled
-                title="Google sign-in skips required organization details — please use the form above"
-              />
-              <MicrosoftButton />
-            </div>
-
-            <div className="mt-4 flex items-center justify-center gap-1.5 text-xs text-brand-text-muted">
+            <div className="mt-5 flex items-center justify-center gap-1.5 text-xs text-brand-text-muted">
               <ShieldCheck className="h-3.5 w-3.5 text-brand-text-muted" />
               <span>We&apos;ll never share your information with third parties.</span>
             </div>
