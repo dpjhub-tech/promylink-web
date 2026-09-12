@@ -331,7 +331,16 @@ export interface OrganizationSignupState {
   bankName: string;
   bankDoc: UploadedDocInfo;
 
-  // Step 4 / Submission Status
+  // Step 4: Business Declaration & Responsibility Agreement
+  declarationAgreed: boolean;
+  declarationAuthorized: boolean;
+  digitalSignature: string;
+  declarationSignedAt: string;
+
+  // Step 5: Final Review & Policy Acceptance
+  finalPoliciesAgreed: boolean;
+
+  // Submission Status
   applicationId: string;
   submittedAt: string;
   status: "draft" | "under_review" | "approved";
@@ -372,6 +381,12 @@ const initialState: OrganizationSignupState = {
   bankIfsc: "",
   bankName: "",
   bankDoc: {},
+
+  declarationAgreed: false,
+  declarationAuthorized: false,
+  digitalSignature: "",
+  declarationSignedAt: "",
+  finalPoliciesAgreed: false,
 
   applicationId: "",
   submittedAt: "",

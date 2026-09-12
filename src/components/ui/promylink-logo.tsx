@@ -17,7 +17,7 @@ export function PromylinkLogoIcon({
   priority = true,
 }: PromylinkLogoIconProps) {
   const finalWidth = width || size || 40;
-  const finalHeight = height || size || 52;
+  const finalHeight = height || size || 40;
 
   return (
     <Image

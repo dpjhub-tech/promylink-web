@@ -16,6 +16,9 @@ import {
   AlertCircle,
   Landmark,
   MapPin,
+  Scale,
+  PenTool,
+  Lock,
 } from "lucide-react";
 import { WizardShell } from "@/components/organization-signup/wizard-shell";
 import {
@@ -26,10 +29,10 @@ import {
 
 export default function ReviewSubmitPage() {
   const router = useRouter();
-  const { state, submitApplication } = useOrganizationSignup();
+  const { state, updateState, submitApplication } = useOrganizationSignup();
   const currentStructure = BUSINESS_TYPES[state.businessType];
 
-  const [agreed, setAgreed] = useState(true);
+  const [agreed, setAgreed] = useState(state.finalPoliciesAgreed || false);
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -99,7 +102,7 @@ export default function ReviewSubmitPage() {
           label: secondaryOptionMeta.label,
           identifier: "",
           file: state.panDoc,
-          icon: FileText,
+          icon: CreditCard,
         };
     }
   };
@@ -107,39 +110,43 @@ export default function ReviewSubmitPage() {
   const secondaryDetails = getSecondaryDocDetails();
   const SecondaryIcon = secondaryDetails.icon;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!agreed) {
-      setError("Please agree to the compliance & verification terms.");
+      setError("Please accept the authorization & policy declaration checkbox to submit your application.");
       return;
     }
 
     setIsSubmitting(true);
-    submitApplication();
+    setError("");
 
-    setTimeout(() => {
-      setIsSubmitting(false);
+    try {
+      updateState({ finalPoliciesAgreed: true });
+      submitApplication();
       router.push("/organization/signup/all-set");
-    }, 600);
+    } catch {
+      setError("An error occurred while submitting your application. Please try again.");
+      setIsSubmitting(false);
+    }
   };
 
   return (
     <WizardShell
-      currentIndex={3}
-      backHref="/organization/signup/verification-documents"
+      currentIndex={4}
+      backHref="/organization/signup/declaration"
       containerClassName="max-w-3xl"
     >
       {/* Header */}
       <div className="mb-6">
         <div className="flex items-center gap-2 text-xs font-semibold text-brand-primary bg-brand-primary/5 border border-brand-primary/20 px-3 py-1 rounded-full w-fit mb-2">
           <ClipboardCheck className="h-3.5 w-3.5" />
-          Step 4 of 5: Final Review
+          Step 5 of 6: Final Review
         </div>
         <h1 className="text-2xl sm:text-3xl font-bold text-brand-text-primary">
           Review &amp; Submit Application
         </h1>
         <p className="text-sm text-brand-text-muted mt-1">
-          Review your organization profile and documents before submitting for compliance approval.
+          Review your organization profile, verification documents, and signed declaration before submitting for compliance approval.
         </p>
       </div>
 
@@ -179,11 +186,9 @@ export default function ReviewSubmitPage() {
                 <span className="font-semibold text-brand-text-primary text-sm">
                   {state.email || "—"}
                 </span>
-                {state.isEmailVerified && (
-                  <span className="bg-brand-success/15 text-brand-success font-semibold px-1.5 py-0.5 rounded text-[10px]">
-                    Verified ✓
-                  </span>
-                )}
+                <span className="text-[10px] text-brand-success font-medium bg-brand-success/10 px-1.5 py-0.2 rounded">
+                  Verified
+                </span>
               </div>
             </div>
 
@@ -193,11 +198,9 @@ export default function ReviewSubmitPage() {
                 <span className="font-semibold text-brand-text-primary text-sm">
                   {state.countryCode} {state.phone || "—"}
                 </span>
-                {state.isPhoneVerified && (
-                  <span className="bg-brand-success/15 text-brand-success font-semibold px-1.5 py-0.5 rounded text-[10px]">
-                    Verified ✓
-                  </span>
-                )}
+                <span className="text-[10px] text-brand-success font-medium bg-brand-success/10 px-1.5 py-0.2 rounded">
+                  Verified
+                </span>
               </div>
             </div>
           </div>
@@ -209,7 +212,7 @@ export default function ReviewSubmitPage() {
             <div className="flex items-center gap-2">
               <Building2 className="h-4.5 w-4.5 text-brand-primary" />
               <h2 className="text-sm sm:text-base font-bold text-brand-text-primary">
-                2. Business Details
+                2. Business Profile
               </h2>
             </div>
             <button
@@ -221,31 +224,38 @@ export default function ReviewSubmitPage() {
             </button>
           </div>
 
-          <div className="grid sm:grid-cols-3 gap-4 text-xs">
+          <div className="grid sm:grid-cols-2 gap-4 text-xs">
             <div>
-              <span className="text-brand-text-muted block mb-0.5">Legal Name</span>
+              <span className="text-brand-text-muted block mb-0.5">Legal Business Name</span>
               <p className="font-semibold text-brand-text-primary text-sm">
                 {state.organizationName || "—"}
               </p>
             </div>
 
             <div>
-              <span className="text-brand-text-muted block mb-0.5">Industry</span>
+              <span className="text-brand-text-muted block mb-0.5">Entity Structure</span>
+              <p className="font-semibold text-brand-text-primary text-sm">
+                {currentStructure.label}
+              </p>
+            </div>
+
+            <div>
+              <span className="text-brand-text-muted block mb-0.5">Industry Category</span>
               <p className="font-semibold text-brand-text-primary text-sm">
                 {state.industry || "—"}
               </p>
             </div>
 
             <div>
-              <span className="text-brand-text-muted block mb-0.5">Business Structure</span>
-              <span className="inline-block bg-brand-primary/10 text-brand-primary font-bold px-2.5 py-1 rounded-md text-xs mt-0.5">
-                {currentStructure.label}
-              </span>
+              <span className="text-brand-text-muted block mb-0.5">Website / Digital Link</span>
+              <p className="font-semibold text-brand-text-primary text-sm truncate">
+                {state.website || "None"}
+              </p>
             </div>
           </div>
         </div>
 
-        {/* Card 3: Uploaded Documents */}
+        {/* Card 3: KYC Documents */}
         <div className="rounded-2xl border border-brand-border bg-brand-surface p-5 sm:p-6 shadow-2xs space-y-4">
           <div className="flex items-center justify-between border-b border-brand-border/60 pb-3">
             <div className="flex items-center gap-2">
@@ -372,9 +382,51 @@ export default function ReviewSubmitPage() {
           </div>
         </div>
 
-        {/* Declaration Checkbox */}
-        <div className="rounded-2xl border border-brand-border bg-brand-surface p-4.5 sm:p-5 shadow-2xs">
-          <label className="flex items-start gap-3 cursor-pointer">
+        {/* Card 4: Business Declaration & Digital Signature */}
+        <div className="rounded-2xl border border-brand-border bg-brand-surface p-5 sm:p-6 shadow-2xs space-y-4">
+          <div className="flex items-center justify-between border-b border-brand-border/60 pb-3">
+            <div className="flex items-center gap-2">
+              <Scale className="h-4.5 w-4.5 text-brand-primary" />
+              <h2 className="text-sm sm:text-base font-bold text-brand-text-primary">
+                4. Business Declaration &amp; Responsibility Agreement
+              </h2>
+            </div>
+            <button
+              type="button"
+              onClick={() => router.push("/organization/signup/declaration")}
+              className="inline-flex items-center gap-1 text-xs font-semibold text-brand-primary hover:text-brand-primary-dark cursor-pointer"
+            >
+              <Edit3 className="h-3.5 w-3.5" /> Edit
+            </button>
+          </div>
+
+          <div className="grid sm:grid-cols-3 gap-4 text-xs bg-brand-surface-secondary/50 p-4 rounded-xl border border-brand-border/60">
+            <div>
+              <span className="text-brand-text-muted block mb-0.5">Agreement Status</span>
+              <span className="inline-flex items-center gap-1 font-semibold text-brand-success text-xs bg-brand-success/10 px-2 py-0.5 rounded">
+                <CheckCircle2 className="h-3.5 w-3.5" /> Accepted &amp; Signed
+              </span>
+            </div>
+
+            <div>
+              <span className="text-brand-text-muted block mb-0.5">Digital Signatory</span>
+              <p className="font-semibold text-brand-text-primary text-sm truncate">
+                {state.digitalSignature || state.name || "—"}
+              </p>
+            </div>
+
+            <div>
+              <span className="text-brand-text-muted block mb-0.5">Signed Date</span>
+              <p className="font-semibold text-brand-text-primary text-sm">
+                {state.declarationSignedAt || "19/10/2026"}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Final Mandatory Policy Acceptance Checkbox */}
+        <div className="rounded-2xl border border-brand-primary/30 bg-brand-primary/[0.02] p-4.5 sm:p-5 shadow-2xs">
+          <label className="flex items-start gap-3 cursor-pointer select-none">
             <input
               type="checkbox"
               checked={agreed}
@@ -382,13 +434,13 @@ export default function ReviewSubmitPage() {
                 setAgreed(e.target.checked);
                 if (e.target.checked) setError("");
               }}
-              className="mt-1 h-4 w-4 rounded border-brand-border text-brand-primary focus:ring-brand-primary/30 cursor-pointer"
+              className="mt-1 h-4 w-4 rounded border-brand-border text-brand-primary focus:ring-brand-primary/30 accent-brand-primary cursor-pointer"
             />
             <div className="text-xs text-brand-text-secondary leading-relaxed">
               <span className="font-semibold text-brand-text-primary block mb-0.5">
-                Compliance &amp; Authenticity Declaration
+                Final Authorization &amp; Policy Acceptance
               </span>
-              I certify that all details, tax identifiers, and uploaded verification documents are authentic, belong to the registered legal entity, and comply with PromyLink&apos;s Business Verification Guidelines.
+              I confirm that I am authorised to represent this business and accept the PromyLink Business Declaration, Terms of Use, Privacy Policy and Acceptable Use &amp; Prohibited Content Policy.
             </div>
           </label>
         </div>
@@ -397,17 +449,21 @@ export default function ReviewSubmitPage() {
         <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-brand-border">
           <button
             type="button"
-            onClick={() => router.push("/organization/signup/verification-documents")}
+            onClick={() => router.push("/organization/signup/declaration")}
             className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 rounded-xl border border-brand-border bg-brand-surface px-5 py-2.5 text-sm font-semibold text-brand-text-primary hover:bg-brand-surface-secondary transition-colors cursor-pointer"
           >
             <ChevronLeft className="h-4 w-4" />
-            Back to Documents
+            Back to Declaration
           </button>
 
           <button
             type="submit"
-            disabled={isSubmitting}
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-brand-primary hover:bg-brand-primary-dark px-8 py-3 text-sm font-semibold text-white transition-all shadow-sm cursor-pointer disabled:opacity-50"
+            disabled={isSubmitting || !agreed}
+            className={`w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl px-8 py-3 text-sm font-semibold text-white transition-all shadow-sm ${
+              agreed && !isSubmitting
+                ? "bg-brand-primary hover:bg-brand-primary-dark cursor-pointer active:scale-[0.99]"
+                : "bg-brand-primary/50 cursor-not-allowed opacity-70"
+            }`}
           >
             {isSubmitting ? "Submitting Application..." : "Submit Application for Verification"}
             <ArrowRight className="h-4 w-4" />

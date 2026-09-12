@@ -19,6 +19,12 @@ export const WIZARD_STEPS = [
     path: "/organization/signup/verification-documents",
   },
   {
+    key: "declaration",
+    label: "Business Declaration",
+    description: "Legal responsibility & digital signature.",
+    path: "/organization/signup/declaration",
+  },
+  {
     key: "review-submit",
     label: "Review & Submit",
     description: "Application summary & submission.",
@@ -33,4 +39,3 @@ export const WIZARD_STEPS = [
 ] as const;
 
 export type WizardStepKey = (typeof WIZARD_STEPS)[number]["key"];
-

@@ -182,7 +182,7 @@ export default function VerificationDocumentsPage() {
       updateState({
         hasGst: showOptionalGst || selectedSecondary === "gst",
       });
-      router.push("/organization/signup/review-submit");
+      router.push("/organization/signup/declaration");
     }
   };
 

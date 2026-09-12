@@ -1,5 +1,5 @@
 import Link from "next/link";
-import Image from "next/image";
+import { PromylinkLogoIcon } from "@/components/ui/promylink-logo";
 
 const footerLinks: Record<string, { name: string; href: string }[]> = {
   Product: [
@@ -35,9 +35,9 @@ export function Footer() {
         <div className="container mx-auto">
           <div className="grid grid-cols-2 md:grid-cols-5 gap-8 mb-12">
             <div className="col-span-2 md:col-span-1">
-              <Link href="/" className="flex items-center gap-2 mb-4">
-                <Image src="/logo.png" alt="Promylink" width={36} height={36} className="h-9 w-9 rounded-xl object-contain" />
-                <span className="text-xl font-bold">Promylink</span>
+              <Link href="/" className="flex items-center gap-2 mb-4 group">
+                <PromylinkLogoIcon className="h-9 w-auto object-contain transition-transform group-hover:scale-105" />
+                <span className="text-xl font-bold brand-text-animated">Promylink</span>
               </Link>
               <p className="text-sm text-muted-foreground">
                 promylink.com - India&apos;s No 1 Premium Search Engine
@@ -73,9 +73,9 @@ export function Footer() {
       <div className="md:hidden py-6">
         <div className="container mx-auto">
           <div className="flex items-center justify-between mb-4">
-            <Link href="/" className="flex items-center gap-2">
-              <Image src="/logo.png" alt="Promylink" width={28} height={28} className="h-7 w-7 rounded-lg object-contain" />
-              <span className="font-bold text-sm">Promylink</span>
+            <Link href="/" className="flex items-center gap-2 group">
+              <PromylinkLogoIcon className="h-7 w-auto object-contain transition-transform group-hover:scale-105" />
+              <span className="font-bold text-sm brand-text-animated">Promylink</span>
             </Link>
             <a href="https://www.instagram.com/promylink/" target="_blank" rel="noopener noreferrer" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
               Instagram

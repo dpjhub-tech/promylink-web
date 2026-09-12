@@ -22,12 +22,12 @@ export function InstallBanner() {
   useEffect(() => {
     try {
       if (localStorage.getItem(DISMISS_KEY) === "true") setDismissed(true);
-    } catch {}
+    } catch { }
   }, []);
 
   const handleDismiss = () => {
     setDismissed(true);
-    try { localStorage.setItem(DISMISS_KEY, "true"); } catch {}
+    try { localStorage.setItem(DISMISS_KEY, "true"); } catch { }
   };
 
   if (!canInstall || isInstalled || dismissed) return null;
@@ -42,7 +42,7 @@ export function InstallBanner() {
           <X className="h-4 w-4 text-muted-foreground" />
         </button>
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-xl overflow-hidden shrink-0 bg-white shadow-sm relative">
+          <div className="w-12 h-12 rounded-2xl overflow-hidden shrink-0 bg-secondary/60 border border-border/50 shadow-sm relative flex items-center justify-center p-1.5">
             <Image src="/logo.png" alt="Promylink" fill className="object-contain p-1" />
           </div>
           <div className="flex-1 min-w-0">
